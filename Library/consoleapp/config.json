@@ -1,0 +1,5 @@
+{
+    "connection": {
+        "book_file_path": "books.json"
+    }
+}
