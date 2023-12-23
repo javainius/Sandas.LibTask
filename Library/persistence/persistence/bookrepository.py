@@ -1,9 +1,9 @@
 import os
 import json
 import uuid
-from Library.persistence.ibookrepository import IBookRepository
-from Library.persistence.repositoryexception import RepositoryException
-from Library.persistenceentities.bookentity import BookEntity
+from Library.persistence.persistence.ibookrepository import IBookRepository
+from Library.persistence.persistence.repositoryexception import RepositoryException
+from Library.persistence.persistenceentities.bookentity import BookEntity
 
 class BookRepository(IBookRepository):
     def __init__(self, file_path: str):

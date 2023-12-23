@@ -1,47 +1,47 @@
 class BookContract:
     def __init__(self, title, author, publication_year, id = None, is_taken = False):
-        self.__title = title
-        self.__author = author
-        self.__publication_year = publication_year
-        self.__id = id
-        self.__is_taken = is_taken
+        self._title = title
+        self._author = author
+        self._publication_year = publication_year
+        self._id = id
+        self._is_taken = is_taken
 
     @property
     def title(self):
-        return self.__title
+        return self._title
 
     @title.setter
     def title(self, new_title):
-        self.__title = new_title
+        self._title = new_title
 
     @property
     def author(self):
-        return self.__author
+        return self._author
 
     @author.setter
     def author(self, new_author):
-        self.__author = new_author
+        self._author = new_author
 
     @property
     def publication_year(self):
-        return self.__publication_year
+        return self._publication_year
 
     @publication_year.setter
     def publication_year(self, new_publication_date):
-        self.__publication_year = new_publication_date
+        self._publication_year = new_publication_date
 
     @property
     def book_id(self):
-        return self.__id
+        return self._id
 
     @book_id.setter
     def book_id(self, new_id):
-        self.__id = new_id
+        self._id = new_id
 
     @property
     def is_taken(self):
-        return self.__is_taken
+        return self._is_taken
 
     @is_taken.setter
     def is_taken(self, is_taken):
-        self.__is_taken = is_taken
+        self._is_taken = is_taken

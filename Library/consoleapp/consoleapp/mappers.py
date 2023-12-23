@@ -1,5 +1,5 @@
-from ..consoleappcontracts.bookcontract import BookContract
-from Library.servicesmodels.bookmodel import BookModel
+from Library.consoleapp.consoleappcontracts.bookcontract import BookContract
+from Library.services.servicesmodels.bookmodel import BookModel
 
 
 def bookcontract_to_bookmodel(book: BookContract):

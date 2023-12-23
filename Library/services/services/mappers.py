@@ -1,5 +1,5 @@
-from Library.persistenceentities.bookentity import BookEntity
-from Library.servicesmodels.bookmodel import BookModel
+from Library.persistence.persistenceentities.bookentity import BookEntity
+from Library.services.servicesmodels.bookmodel import BookModel
 
 
 def bookmodel_to_bookentity(book: BookModel):

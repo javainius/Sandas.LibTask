@@ -1,8 +1,8 @@
-from Library.consoleapp.mappers import bookcontract_to_bookmodel, bookmodel_to_bookcontract
-from Library.consoleappcontracts.bookcontract import BookContract
-from Library.persistence.repositoryexception import RepositoryException
-from Library.services.bookvalueexception import BookValueException
-from Library.services.ibookservice import IBookService
+from Library.consoleapp.consoleapp.mappers import bookcontract_to_bookmodel, bookmodel_to_bookcontract
+from Library.consoleapp.consoleappcontracts.bookcontract import BookContract
+from Library.persistence.persistence.repositoryexception import RepositoryException
+from Library.services.services.bookvalueexception import BookValueException
+from Library.services.services.ibookservice import IBookService
 
 class Application:
     def setup(self, book_service: IBookService):
@@ -129,7 +129,29 @@ class Application:
             print(f"Book value exception occured: {e}")
 
     def _search_for_book(self):
-        print("Searching for a book by title or author")
+        print("You can search only by one of the two parameters: by title or by author")
+        print("t -> title search")
+        print("a -> author search")
+        search_parameter = input("Enter your choice: ").lower()
+
+        if search_parameter == "t":
+            title = input("Enter title that you want to find: ")
+            found_books = self.__book_service.search_books_by_title(title)
+            self._print_search_results([bookmodel_to_bookcontract(book) for book in found_books])
+        elif search_parameter == "a":
+            author = input("Enter author that you want to find: ")
+            found_books = self.__book_service.search_books_by_author(author)
+            self._print_search_results([bookmodel_to_bookcontract(book) for book in found_books])
+        else:
+            print("such parameter doesn't exist")
+
+    def _print_search_results(self, books):
+            if len(books) == 0:
+                print("Sorry, no books were found")
+            else:
+                print("Here is your results:")
+                for book in books:
+                    self._print_book(book)
 
     def _invalid_action(self):
         print("Invalid action. Please choose a valid option.")

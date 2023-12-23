@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
+from Library.services.servicesmodels.bookmodel import BookModel
 
-from Library.servicesmodels.bookmodel import BookModel
 
 class IBookService(ABC):
     @abstractmethod
@@ -24,5 +24,9 @@ class IBookService(ABC):
         pass
 
     @abstractmethod
-    def find_book(self, title = None, author = None):
+    def search_books_by_title(self, title):
+        pass
+
+    @abstractmethod
+    def search_books_by_author(self, author):
         pass
