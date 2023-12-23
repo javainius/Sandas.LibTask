@@ -1,6 +1,7 @@
 from Library.consoleapp.mappers import bookcontract_to_bookmodel, bookmodel_to_bookcontract
 from Library.consoleappcontracts.bookcontract import BookContract
 from Library.persistence.repositoryexception import RepositoryException
+from Library.services.bookvalueexception import BookValueException
 from Library.services.ibookservice import IBookService
 
 class Application:
@@ -84,10 +85,48 @@ class Application:
         print(f"Is book taken: {book.is_taken}")
 
     def _take_book(self):
-        print("Taking a book from the library")
+        print("Take a book from the list:")
+        try:
+            existing_books = self.__book_service.get_all_books()
+            existing_books = [bookmodel_to_bookcontract(book) for book in existing_books]
+
+            for book in existing_books:
+                self._print_book(book)
+
+            book_id = input("Enter the id of a book that you want to take: ")
+            returned_book = bookmodel_to_bookcontract(self.__book_service.take_book(book_id))
+
+            print("The book has been taken successfully: ")
+            self._print_book(returned_book)
+
+        except ValueError as e:
+            print(f"Value error occured: {e}")
+        except RepositoryException as e:
+            print(f"Repository exception occured: {e}")
+        except BookValueException as e:
+            print(f"Book value exception occured: {e}")
 
     def _return_book(self):
-        print("Returning a book to the library")
+        print("Return a book from the list:")
+        try:
+            existing_books = self.__book_service.get_all_books()
+            existing_books = [bookmodel_to_bookcontract(book) for book in existing_books]
+
+            for book in existing_books:
+                self._print_book(book)
+
+            book_id = input("Enter the id of a book that you want to return: ")
+            returned_book = bookmodel_to_bookcontract(self.__book_service.return_book(book_id))
+
+            print("The book has been returned successfully: ")
+            self._print_book(returned_book)
+
+        except ValueError as e:
+            print(f"Value error occured: {e}")
+        except RepositoryException as e:
+            print(f"Repository exception occured: {e}")
+        except BookValueException as e:
+            print(f"Book value exception occured: {e}")
 
     def _search_for_book(self):
         print("Searching for a book by title or author")

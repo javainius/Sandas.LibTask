@@ -1,6 +1,7 @@
 import datetime
 from Library.persistence.ibookrepository import IBookRepository
 from Library.persistenceentities.bookentity import BookEntity
+from Library.services.bookvalueexception import BookValueException
 from Library.services.ibookservice import IBookService
 from Library.services.mappers import bookentity_to_bookmodel, bookmodel_to_bookentity
 from Library.servicesmodels.bookmodel import BookModel
@@ -20,7 +21,7 @@ class BookService(IBookService):
         if self._is_null_or_empty(book.publication_year):
             raise ValueError("Publication year cannot be null or empty")
         
-        self._check_publication_year_type(book.publication_year)
+        book.publication_year = self._change_publication_year_type(book.publication_year)
         
         new_book = self.__book_repository.create_book(bookmodel_to_bookentity(book))
         book_model = bookentity_to_bookmodel(new_book)
@@ -29,14 +30,11 @@ class BookService(IBookService):
 
     def buy_book_copy(self, book_id, publication_year):
         book = self._get_book(book_id)
-
-        if book is None:
-            raise ValueError("Book with such id doesn't exist")
         
         if self._is_null_or_empty(publication_year):
             publication_year = datetime.datetime.now().year
         else:
-            self._check_publication_year_type(publication_year)
+            publication_year = self._change_publication_year_type(publication_year)
 
         book.publication_year = publication_year
         return self.create_book(book)
@@ -47,10 +45,22 @@ class BookService(IBookService):
         return  [bookentity_to_bookmodel(book) for book in books]
     
     def take_book(self, book_id):
-        pass
+        book = self._get_book(book_id)
+        if book.is_taken:
+            raise BookValueException("This book is already taken")
 
+        book.is_taken = True
+        
+        return self.__book_repository.update_book(book)
+        
     def return_book(self, book_id):
-        pass
+        book = self._get_book(book_id)
+        if not book.is_taken:
+            raise BookValueException("This book is already in the library")
+
+        book.is_taken = False
+        
+        return self.__book_repository.update_book(book)
 
     def find_book(self, title = None, author = None):
         pass
@@ -64,9 +74,13 @@ class BookService(IBookService):
         for book in existing_books:
             if book.id == book_id:
                 return book
-
-        return None
+            
+        raise ValueError("Book with such id doesn't exist")
+        
     
-    def _check_publication_year_type(self, year):
-            if not isinstance(year, int):
-                raise ValueError("PublicationYear must be a number")
+    def _change_publication_year_type(self, year):
+            try:
+                return int(year)
+            except ValueError:
+                raise ValueError("Publication year must be a number")
+                

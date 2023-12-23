@@ -44,14 +44,15 @@ class BookRepository(IBookRepository):
             existing_books = self.read_books() or []
 
             for book in existing_books:
-                if book['id'] == updated_book.id:
-                    book['title'] = updated_book.title
-                    book['author'] = updated_book.author
-                    book['publication_date'] = updated_book.publication_date
-                    book['is_taken'] = updated_book.is_taken
+                if book.id == updated_book.id:
+                    book.title = updated_book.title
+                    book.author = updated_book.author
+                    book.publication_year = updated_book.publication_year
+                    book.is_taken = updated_book.is_taken
 
             with open(self.__file_path, 'w') as file:
-                json.dump(existing_books, file, default=lambda x: x.__dict__, indent=2)
+                json.dump([book.to_dict() for book in existing_books], file, indent=2)
 
+            return updated_book
         except Exception as e:
             raise RepositoryException(f"Error updating book: {e}")
