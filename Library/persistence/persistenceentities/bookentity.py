@@ -60,7 +60,7 @@ class BookEntity:
         return BookEntity(
             title=book_dict.get('title'),
             author=book_dict.get('author'),
-            publication_year=book_dict.get('publication_year'),
+            publication_year=int((book_dict.get('publication_year'))),
             id=book_dict.get('id'),
             is_taken=book_dict.get('is_taken', False)
         )

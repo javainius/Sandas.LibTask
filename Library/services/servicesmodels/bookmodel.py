@@ -45,3 +45,15 @@ class BookModel:
     @is_taken.setter
     def is_taken(self, is_taken):
         self._is_taken = is_taken
+      
+    def __eq__(self, other):
+        if not isinstance(other, BookModel):
+            return False
+
+        return (
+            self.title == other.title and
+            self.author == other.author and
+            self.publication_year == other.publication_year and
+            self.id == other.id and
+            self.is_taken == other.is_taken
+        )

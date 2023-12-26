@@ -3,9 +3,7 @@ from Library.services.servicesmodels.bookmodel import BookModel
 
 
 def bookmodel_to_bookentity(book: BookModel):
-    return BookEntity(book.title, book.author, book.publication_year)
+    return BookEntity(book.title, book.author, book.publication_year, book.id)
 
-def bookentity_to_bookmodel(book: BookEntity):
-    book_model = BookModel(book.title, book.author, book.publication_year, book.id, book.is_taken)
-
-    return book_model
+def bookentity_to_bookmodel(book: BookEntity) -> BookModel:
+    return BookModel(book.title, book.author, book.publication_year, book.id, book.is_taken)

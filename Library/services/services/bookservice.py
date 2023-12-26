@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from Library.persistence.persistence.ibookrepository import IBookRepository
 from Library.services.services.bookvalueexception import BookValueException
 from Library.services.services.ibookservice import IBookService
@@ -27,14 +27,13 @@ class BookService(IBookService):
 
         return book_model
 
-    def buy_book_copy(self, book_id, publication_year):
-        book = self._get_book(book_id)
-        
+    def buy_book_copy(self, book_id, publication_year):        
         if self._is_null_or_empty(publication_year):
-            publication_year = datetime.datetime.now().year
+            publication_year = datetime.now().year
         else:
             publication_year = self._change_publication_year_type(publication_year)
 
+        book = self._get_book(book_id)
         book.publication_year = publication_year
         return self.create_book(book)
         
@@ -49,8 +48,9 @@ class BookService(IBookService):
             raise BookValueException("This book is already taken")
 
         book.is_taken = True
+        book = bookmodel_to_bookentity(book)
         
-        return self._book_repository.update_book(book)
+        return bookentity_to_bookmodel(self._book_repository.update_book(book))
         
     def return_book(self, book_id):
         book = self._get_book(book_id)
@@ -104,12 +104,12 @@ class BookService(IBookService):
             if book.id == book_id:
                 return book
             
-        raise ValueError("Book with such id doesn't exist")
+        raise BookValueException("Book with such id doesn't exist")
         
     
     def _change_publication_year_type(self, year):
             try:
                 return int(year)
             except ValueError:
-                raise ValueError("Publication year must be a number")
+                raise ValueError("Publication year must be an integer")
                 
