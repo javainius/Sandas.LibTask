@@ -61,5 +61,19 @@
     "publication_year": 3,
     "id": "421f3173-9dfc-46ba-9dba-ab3b61d014c2",
     "is_taken": true
+  },
+  {
+    "title": "dfh",
+    "author": "gjkl",
+    "publication_year": 5,
+    "id": "b147d6bb-a807-4739-9dd2-5ac92e200092",
+    "is_taken": false
+  },
+  {
+    "title": "dfh",
+    "author": "gjkl",
+    "publication_year": 2023,
+    "id": "94d82857-0e0e-4914-b784-6b247e1471a2",
+    "is_taken": false
   }
 ]

@@ -277,7 +277,7 @@ def test_given_matching_title_when_search_books_by_title_then_matching_book_is_r
     assert len(found_books) == 1
     assert found_books[0].title == title_to_search
 
-def test_given_nonmatching_title_when_search_books_then_returned_empty_list(book_service, mock_book_repository):
+def test_given_nonmatching_title_when_search_books_by_title_then_returned_empty_list(book_service, mock_book_repository):
     # Given
     title_to_search = fake.word()
     book_with_nonmatching_title = Mock()
@@ -305,7 +305,7 @@ def test_given_matching_title_when_search_books_by_title_then_matching_book_is_r
     assert len(found_books) == 1
     assert found_books[0].title == title_to_search
 
-def test_given_uprocessed_book_list_when_search_books_then_returned_filtered_and_sorted_list_returned(book_service, mock_book_repository):
+def test_given_uprocessed_book_list_when_search_books_by_title_then_returned_filtered_and_sorted_list_returned(book_service, mock_book_repository):
     # Given
     title_to_search = fake.word()
     book_with_matching_title = BookModel(title_to_search, fake.name(), 2000, uuid.uuid4())
@@ -332,6 +332,81 @@ def test_given_uprocessed_book_list_when_search_books_then_returned_filtered_and
 
     # When
     found_books = book_service.search_books_by_title(title_to_search)
+
+    # Then
+    assert mock_book_repository.read_books.called
+    assert found_books == expected_book_list
+
+def test_given_matching_title_when_search_books_by_author_then_matching_book_is_returned(book_service, mock_book_repository):
+    # Given
+    author_to_search = fake.name()
+    book_with_matching_author = Mock()
+    book_with_matching_author.title = author_to_search
+    mock_book_repository.read_books.return_value = [book_with_matching_author]
+
+    # When
+    found_books = book_service.search_books_by_author(author_to_search)
+
+    # Then
+    assert mock_book_repository.read_books.called
+    assert len(found_books) == 1
+    assert found_books[0].title == author_to_search
+
+def test_given_nonmatching_title_when_search_books_by_author_then_returned_empty_list(book_service, mock_book_repository):
+    # Given
+    author_to_search = fake.word()
+    book_with_nonmatching_author = Mock()
+    mock_book_repository.read_books.return_value = [book_with_nonmatching_author]
+
+    # When
+    found_books = book_service.search_books_by_author(author_to_search)
+
+    # Then
+    assert mock_book_repository.read_books.called
+    assert len(found_books) == 0
+
+def test_given_matching_title_when_search_books_by_author_then_matching_book_is_returned(book_service, mock_book_repository):
+    # Given
+    author_to_search = fake.name()
+    book_with_matching_author = Mock()
+    book_with_matching_author.author = author_to_search
+    mock_book_repository.read_books.return_value = [book_with_matching_author]
+
+    # When
+    found_books = book_service.search_books_by_author(author_to_search)
+
+    # Then
+    assert mock_book_repository.read_books.called
+    assert len(found_books) == 1
+    assert found_books[0].author == author_to_search
+
+def test_given_uprocessed_book_list_when_search_books_by_author_then_returned_filtered_and_sorted_list_returned(book_service, mock_book_repository):
+    # Given
+    author_to_search = fake.name()
+    book_with_matching_author = BookModel(fake.word(), author_to_search, 2000, uuid.uuid4())
+    different_publication_year_book = copy.deepcopy(book_with_matching_author)
+    different_publication_year_book2 = copy.deepcopy(book_with_matching_author)
+
+    different_publication_year_book.publication_year = 2001
+    different_publication_year_book2.publication_year = 2002
+    unprocessed_book_list = [
+        bookmodel_to_bookentity(different_publication_year_book2),
+        bookmodel_to_bookentity(book_with_matching_author),
+        bookmodel_to_bookentity(different_publication_year_book),
+        bookmodel_to_bookentity(copy.deepcopy(book_with_matching_author)),
+        bookmodel_to_bookentity(copy.deepcopy(book_with_matching_author)),
+        bookmodel_to_bookentity(copy.deepcopy(book_with_matching_author))
+    ]
+    mock_book_repository.read_books.return_value = unprocessed_book_list
+
+    expected_book_list = [
+        book_with_matching_author,
+        different_publication_year_book,
+        different_publication_year_book2
+    ]
+
+    # When
+    found_books = book_service.search_books_by_author(author_to_search)
 
     # Then
     assert mock_book_repository.read_books.called
