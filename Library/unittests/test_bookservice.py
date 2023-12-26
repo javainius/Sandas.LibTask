@@ -10,7 +10,7 @@ from Library.services.servicesmodels.bookmodel import BookModel
 from Library.services.services.bookservice import BookService
 from faker import Faker
 
-from Library.services.servicesmodels.valueerrors import BookServiceExceptions
+from Library.services.servicesmodels.bookserviceexceptions import BookServiceExceptions
 
 fake = Faker()
 
@@ -51,7 +51,7 @@ def test_given_book_without_title_when_create_book_then_raises_value_error(book_
     book_model = BookModel("", fake.name(), fake.year())
 
     # When/Then
-    with pytest.raises(ValueError, match=BookServiceExceptions.BOOK_ALREADY_TAKEN):
+    with pytest.raises(ValueError, match=BookServiceExceptions.TITLE_NULL_OR_EMPTY):
         book_service.create_book(book_model)
         
 def test_given_book_without_author_when_create_book_then_raises_value_error(book_service, mock_book_repository):

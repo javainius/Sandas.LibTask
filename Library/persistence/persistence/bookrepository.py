@@ -22,8 +22,8 @@ class BookRepository(IBookRepository):
                 json.dump([book.to_dict() for book in existing_books], file, indent=2)
             
             return book
-        except Exception as e:
-            raise RepositoryException(f"Error creating book: {e}")
+        except Exception:
+            raise RepositoryException(RepositoryException.ERROR_CREATING_BOOK)
 
     def read_books(self):
         try:
@@ -35,9 +35,9 @@ class BookRepository(IBookRepository):
                 return []
 
         except FileNotFoundError:
-            raise RepositoryException(f"File of books not found.")
-        except Exception as e:
-            raise RepositoryException(f"Error reading file: {e}")
+            raise RepositoryException(RepositoryException.FILE_NOT_FOUND)
+        except Exception:
+            raise RepositoryException(RepositoryException.ERROR_READING_FILE)
 
     def update_book(self, updated_book: BookEntity):
         try:
@@ -55,4 +55,4 @@ class BookRepository(IBookRepository):
 
             return updated_book
         except Exception as e:
-            raise RepositoryException(f"Error updating book: {e}")
+            raise RepositoryException(RepositoryException.ERROR_UPDATING_BOOK)
