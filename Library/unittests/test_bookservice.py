@@ -10,6 +10,8 @@ from Library.services.servicesmodels.bookmodel import BookModel
 from Library.services.services.bookservice import BookService
 from faker import Faker
 
+from Library.services.servicesmodels.valueerrors import BookServiceExceptions
+
 fake = Faker()
 
 @pytest.fixture
@@ -49,7 +51,7 @@ def test_given_book_without_title_when_create_book_then_raises_value_error(book_
     book_model = BookModel("", fake.name(), fake.year())
 
     # When/Then
-    with pytest.raises(ValueError, match="Title cannot be null or empty"):
+    with pytest.raises(ValueError, match=BookServiceExceptions.BOOK_ALREADY_TAKEN):
         book_service.create_book(book_model)
         
 def test_given_book_without_author_when_create_book_then_raises_value_error(book_service, mock_book_repository):
@@ -57,7 +59,7 @@ def test_given_book_without_author_when_create_book_then_raises_value_error(book
     book_model = BookModel(fake.word(), "", fake.year())
 
     # When/Then
-    with pytest.raises(ValueError, match="Author cannot be null or empty"):
+    with pytest.raises(ValueError, match=BookServiceExceptions.AUTHOR_NULL_OR_EMPTY):
         book_service.create_book(book_model)
 
 def test_given_book_without_publication_year_when_create_book_then_raises_value_error(book_service, mock_book_repository):
@@ -65,7 +67,7 @@ def test_given_book_without_publication_year_when_create_book_then_raises_value_
     book_model = BookModel(fake.word(), fake.name(), "")
 
     # When/Then
-    with pytest.raises(ValueError, match="Publication year cannot be null or empty"):
+    with pytest.raises(ValueError, match=BookServiceExceptions.PUBLICATION_YEAR_NULL_OR_EMPTY):
         book_service.create_book(book_model)
 
 def test_given_book_wrong_type_publication_year_when_create_book_then_raises_value_error(book_service, mock_book_repository):
@@ -73,7 +75,7 @@ def test_given_book_wrong_type_publication_year_when_create_book_then_raises_val
     book_model = BookModel(fake.word(), fake.name(), "text")
 
     # When/Then
-    with pytest.raises(ValueError, match="Publication year must be an integer"):
+    with pytest.raises(ValueError, match=BookServiceExceptions.PUBLICATION_YEAR_NOT_INTEGER):
         book_service.create_book(book_model)
 
 def test_given_book_id_and_publication_year_when_buy_book_copy_then_book_copy_is_returned(book_service, mock_book_repository):
@@ -130,7 +132,7 @@ def test_given_wrong_book_id_when_buy_book_copy_then_raises_value_error(book_ser
     mock_book_repository.read_books.return_value = [existing_book]
 
     # When/Then
-    with pytest.raises(ValueError, match="Publication year must be an integer"):
+    with pytest.raises(ValueError, match=BookServiceExceptions.PUBLICATION_YEAR_NOT_INTEGER):
         book_service.buy_book_copy(book_id, "invalid_year")
     assert not mock_book_repository.read_books.called
     assert not mock_book_repository.create_book.called
@@ -142,7 +144,7 @@ def test_given_book_wrong_type_publication_year_when_buy_book_copy_then_raises_v
     mock_book_repository.read_books.return_value = [existing_book]
 
     # When/Then
-    with pytest.raises(BookValueException, match="Book with such id doesn't exist"):
+    with pytest.raises(BookValueException, match=BookServiceExceptions.BOOK_ID_NOT_EXIST):
         book_service.buy_book_copy(book_id, None)
     assert mock_book_repository.read_books.called
     assert not mock_book_repository.create_book.called
@@ -203,7 +205,7 @@ def test_given_taken_book_when_take_book_then_raises_bookvalueexception(book_ser
     mock_book_repository.read_books.return_value = [mock_existing_book]
 
     # When/Then
-    with pytest.raises(BookValueException, match="This book is already taken"):
+    with pytest.raises(BookValueException, match=BookServiceExceptions.BOOK_ALREADY_TAKEN):
         book_service.take_book(book_id)
     assert not mock_book_repository.update_book.called
 
@@ -217,7 +219,7 @@ def test_given_nonexistent_book_when_take_book_then_raises_bookvalueexception(bo
     ]
 
     # When/Then
-    with pytest.raises(BookValueException, match="Book with such id doesn't exist"):
+    with pytest.raises(BookValueException, match=BookServiceExceptions.BOOK_ID_NOT_EXIST):
         book_service.take_book(book_id)
     assert not mock_book_repository.update_book.called
 
@@ -245,7 +247,7 @@ def test_given_available_book_id_when_return_book_then_raises_bookvalueexception
     mock_book_repository.read_books.return_value = [available_book]
 
     # When, Then
-    with pytest.raises(BookValueException, match="This book is already in the library"):
+    with pytest.raises(BookValueException, match=BookServiceExceptions.BOOK_ALREADY_IN_LIBRARY):
         book_service.return_book(available_book.id)
     assert mock_book_repository.read_books.called
     assert not mock_book_repository.update_book.called
@@ -256,7 +258,7 @@ def test_given_nonexistent_book_id_when_return_book_then_raises_bookvalueexcepti
     mock_book_repository.read_books.return_value = [Mock()]
 
     # When, Then
-    with pytest.raises(BookValueException, match="Book with such id doesn't exist"):
+    with pytest.raises(BookValueException, match=BookServiceExceptions.BOOK_ID_NOT_EXIST):
         book_service.return_book(nonexistent_book_id)
     assert mock_book_repository.read_books.called
     assert not mock_book_repository.update_book.called

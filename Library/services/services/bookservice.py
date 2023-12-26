@@ -4,6 +4,7 @@ from Library.services.services.bookvalueexception import BookValueException
 from Library.services.services.ibookservice import IBookService
 from Library.services.services.mappers import bookentity_to_bookmodel, bookmodel_to_bookentity
 from Library.services.servicesmodels.bookmodel import BookModel
+from Library.services.servicesmodels.valueerrors import BookServiceExceptions
 
 
 class BookService(IBookService):
@@ -12,13 +13,13 @@ class BookService(IBookService):
 
     def create_book(self, book: BookModel):
         if self._is_null_or_empty(book.author):
-            raise ValueError("Author cannot be null or empty")
+            raise ValueError(BookServiceExceptions.AUTHOR_NULL_OR_EMPTY)
         
         if self._is_null_or_empty(book.title):
-            raise ValueError("Title cannot be null or empty")
+            raise ValueError(BookServiceExceptions.TITLE_NULL_OR_EMPTY)
 
         if self._is_null_or_empty(book.publication_year):
-            raise ValueError("Publication year cannot be null or empty")
+            raise ValueError(BookServiceExceptions.PUBLICATION_YEAR_NULL_OR_EMPTY)
         
         book.publication_year = self._change_publication_year_type(book.publication_year)
         
@@ -45,7 +46,7 @@ class BookService(IBookService):
     def take_book(self, book_id):
         book = self._get_book(book_id)
         if book.is_taken:
-            raise BookValueException("This book is already taken")
+            raise BookValueException(BookServiceExceptions.BOOK_ALREADY_TAKEN)
 
         book.is_taken = True
         book = bookmodel_to_bookentity(book)
@@ -55,7 +56,7 @@ class BookService(IBookService):
     def return_book(self, book_id):
         book = self._get_book(book_id)
         if not book.is_taken:
-            raise BookValueException("This book is already in the library")
+            raise BookValueException(BookServiceExceptions.BOOK_ALREADY_IN_LIBRARY)
 
         book.is_taken = False
         
@@ -104,12 +105,12 @@ class BookService(IBookService):
             if book.id == book_id:
                 return book
             
-        raise BookValueException("Book with such id doesn't exist")
+        raise BookValueException(BookServiceExceptions.BOOK_ID_NOT_EXIST)
         
     
     def _change_publication_year_type(self, year):
             try:
                 return int(year)
             except ValueError:
-                raise ValueError("Publication year must be an integer")
+                raise ValueError(BookServiceExceptions.PUBLICATION_YEAR_NOT_INTEGER)
                 
